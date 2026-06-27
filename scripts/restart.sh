@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# restart_backyard.sh — Restart pi_birdie backyard service (clean reload)
+# restart.sh — Restart pi_birdie service (clean reload)
 set -euo pipefail
 
 SERVICE="pi_birdie"

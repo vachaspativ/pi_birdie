@@ -7,7 +7,7 @@ Responsibilities:
     3. Initialise all subsystems in dependency order
     4. Wire up cross-service callbacks
     5. Start all services
-    6. Run the UI mainloop (or headless loop in backyard mode)
+    6. Run the UI mainloop (or headless loop in kiosk mode)
     7. Handle SIGTERM/SIGINT for clean shutdown
 
 Subsystem initialisation order:
@@ -18,7 +18,7 @@ Key invariants (for AI agents):
     - The BirdNET Analyzer is initialised ONCE here and shared with AudioProcessor
     - DOALocator is only created when config.audio.channels >= 2 and doa.enabled is true
     - ALL service.stop() calls happen in finally block regardless of error
-    - In 'backyard' mode the UI runs fullscreen kiosk; in 'on_demand' it runs windowed
+    - In 'kiosk' mode the UI runs fullscreen kiosk; in 'on_demand' it runs windowed
     - config.yaml path defaults to ./config.yaml but can be overridden via --config
     - SIGTERM is handled so the systemd service can stop cleanly
 """
@@ -62,7 +62,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--mode",
-        choices=["on_demand", "backyard"],
+        choices=["on_demand", "kiosk"],
         default=None,
         help="Override operation_mode from config.yaml",
     )
@@ -240,8 +240,8 @@ class PiBirdieMain:
         )
 
         # 8. UI
-        if self._mode == "backyard":
-            # Backyard mode: force fullscreen
+        if self._mode == "kiosk":
+            # Kiosk mode: force fullscreen
             self._config["ui"]["fullscreen"] = True
             self._config["ui"]["display_mode"] = self._config["ui"].get(
                 "display_mode", "hdmi"
@@ -376,8 +376,8 @@ def main() -> None:
 
     # CLI --mode overrides config.yaml operation_mode
     mode = args.mode or config.get("operation_mode", "on_demand")
-    if mode not in ("on_demand", "backyard"):
-        logger.critical("Invalid operation_mode: %r. Must be 'on_demand' or 'backyard'.", mode)
+    if mode not in ("on_demand", "kiosk"):
+        logger.critical("Invalid operation_mode: %r. Must be 'on_demand' or 'kiosk'.", mode)
         sys.exit(1)
 
     logger.info("Starting pi_birdie in '%s' mode.", mode)

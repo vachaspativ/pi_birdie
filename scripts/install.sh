@@ -10,7 +10,7 @@
 #   4. Installs pip dependencies from requirements.txt
 #   5. Installs TFLite runtime (ai-edge-litert preferred, tflite-runtime fallback)
 #   6. Creates required project directories
-#   7. Generates and installs a systemd service unit for backyard mode
+#   7. Generates and installs a systemd service unit for kiosk mode
 #   8. Prints next steps
 #
 # Usage:
@@ -20,7 +20,7 @@
 # After install:
 #   source ~/pi_birdie_env/bin/activate
 #   python main.py                          # on_demand mode
-#   sudo systemctl start pi_birdie.service  # backyard mode
+#   sudo systemctl start pi_birdie.service  # kiosk mode
 # =============================================================================
 
 set -euo pipefail
@@ -159,7 +159,7 @@ User=${CURRENT_USER}
 WorkingDirectory=${PROJECT_DIR}
 Environment="DISPLAY=:0"
 Environment="XAUTHORITY=/home/${CURRENT_USER}/.Xauthority"
-ExecStart=${VENV_DIR}/bin/python ${PROJECT_DIR}/main.py --mode backyard
+ExecStart=${VENV_DIR}/bin/python ${PROJECT_DIR}/main.py --mode kiosk
 Restart=on-failure
 RestartSec=10
 TimeoutStopSec=15
@@ -233,7 +233,7 @@ echo ""
 echo -e "  3. ${CYAN}Run in on_demand mode (standard window):${RESET}"
 echo -e "     source $VENV_DIR/bin/activate && python $PROJECT_DIR/main.py"
 echo ""
-echo -e "  4. ${CYAN}Start in backyard/kiosk mode (systemd):${RESET}"
+echo -e "  4. ${CYAN}Start in kiosk mode (systemd):${RESET}"
 echo -e "     sudo systemctl start ${SERVICE_NAME}"
 echo ""
 echo -e "  5. ${CYAN}Get your eBird API token:${RESET}"

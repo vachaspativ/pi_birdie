@@ -5,7 +5,7 @@
 
 # Operation mode:
 #   "on_demand"  - Standard windowed desktop app launched manually by user
-#   "backyard"   - Headless / fullscreen kiosk mode managed by systemd service
+#   "kiosk"      - Headless / fullscreen kiosk mode managed by systemd service
 operation_mode: on_demand
 
 # -----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ location:
   longitude: -97.7431
   state_province: US-TX      # eBird state/province code
   country_code: US
-  location_name: My Backyard
+  location_name: My Station
 
 # -----------------------------------------------------------------------------
 # GPS (gpsd Integration)
@@ -111,7 +111,7 @@ ui:
   display_mode: hdmi
 
   theme: dark                    # "dark" | "light"
-  fullscreen: false              # Overridden to true automatically in backyard mode
+  fullscreen: false              # Overridden to true automatically in kiosk mode
 
   # HDMI display settings (e.g. standard 1024×600 or 1920×1080 monitor)
   hdmi_width: 1024

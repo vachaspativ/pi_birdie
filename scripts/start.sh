@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# start_backyard.sh — Start pi_birdie in backyard (kiosk/systemd) mode
+# start.sh — Start pi_birdie in kiosk (systemd) mode
 set -euo pipefail
 
 SERVICE="pi_birdie"
@@ -11,6 +11,6 @@ sleep 1
 sudo systemctl status "${SERVICE}.service" --no-pager
 
 echo ""
-echo "pi_birdie is running in backyard mode."
+echo "pi_birdie is running in kiosk mode."
 echo "View logs:  journalctl -u ${SERVICE} -f"
 echo "Stop:       sudo systemctl stop ${SERVICE}"

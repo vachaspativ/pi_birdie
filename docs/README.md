@@ -18,7 +18,7 @@
 | 🖥 Adaptive UI | HDMI and touchscreen layouts, dark mode |
 | 📤 eBird Export | eBird Record Format CSV export for manual upload |
 | 🗄 Local Database | SQLite with 2-month auto-retention |
-| 🔄 Two Modes | `on_demand` (windowed) and `backyard` (kiosk/systemd) |
+| 🔄 Two Modes | `on_demand` (windowed) and `kiosk` (systemd kiosk) |
 
 ---
 
@@ -119,7 +119,7 @@ python main.py
 python main.py --mode on_demand --config config.yaml
 ```
 
-### Backyard Mode (Fullscreen Kiosk via systemd)
+### Kiosk Mode (Fullscreen Kiosk via systemd)
 
 ```bash
 # Start
@@ -138,9 +138,9 @@ sudo systemctl enable pi_birdie
 Or use the convenience scripts:
 
 ```bash
-./scripts/start_backyard.sh
-./scripts/stop_backyard.sh
-./scripts/restart_backyard.sh
+./scripts/start.sh
+./scripts/stop.sh
+./scripts/restart.sh
 ```
 
 ---
@@ -149,7 +149,7 @@ Or use the convenience scripts:
 
 ### `operation_mode`
 - `"on_demand"` — Standard windowed app with minimize/maximize/close buttons
-- `"backyard"` — Fullscreen kiosk managed by systemd; cursor hidden on touchscreen
+- `"kiosk"` — Fullscreen kiosk managed by systemd; cursor hidden on touchscreen
 
 ### `audio`
 
@@ -176,7 +176,7 @@ Or use the convenience scripts:
 | Key | Options | Description |
 |---|---|---|
 | `display_mode` | `"hdmi"` / `"touchscreen"` | Controls layout density and touch target sizes |
-| `fullscreen` | `true` / `false` | Auto-set to `true` in backyard mode |
+| `fullscreen` | `true` / `false` | Auto-set to `true` in kiosk mode |
 | `hdmi_width` / `hdmi_height` | integers | Window size for HDMI display |
 | `touchscreen_width` / `touchscreen_height` | integers | Window size for touchscreen |
 | `touchscreen_font_scale` | `0.85` | Font scale multiplier for smaller displays |
