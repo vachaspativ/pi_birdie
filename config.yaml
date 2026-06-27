@@ -1,0 +1,128 @@
+# =============================================================================
+# pi_birdie Configuration
+# All settings are controlled here. Restart the application after changes.
+# =============================================================================
+
+# Operation mode:
+#   "on_demand"  - Standard windowed desktop app launched manually by user
+#   "backyard"   - Headless / fullscreen kiosk mode managed by systemd service
+operation_mode: on_demand
+
+# -----------------------------------------------------------------------------
+# Audio Capture Settings
+# -----------------------------------------------------------------------------
+audio:
+  device_name: null          # null = auto-detect; or ALSA device string e.g. "ac108"
+  sample_rate: 48000         # BirdNET requires exactly 48000 Hz — do not change
+  channels: 1                # 1 = mono/single mic (DoA disabled)
+                             # 4 = ReSpeaker 4-mic array (DoA enabled)
+  chunk_duration_sec: 3.0    # BirdNET segment length (hardcoded in model — do not change)
+  min_confidence: 0.25       # Detection confidence threshold (0.0–1.0)
+  sensitivity: 1.0           # BirdNET sensitivity (0.5–1.5); higher = more detections
+  save_audio_samples: true   # Save 3-sec WAV clips for each detection
+  audio_samples_dir: ./audio_samples
+
+# -----------------------------------------------------------------------------
+# Location (Fallback Coordinates)
+# Used when GPS is unavailable or gps.enabled is false.
+# -----------------------------------------------------------------------------
+location:
+  latitude: 30.2672
+  longitude: -97.7431
+  state_province: US-TX      # eBird state/province code
+  country_code: US
+  location_name: My Backyard
+
+# -----------------------------------------------------------------------------
+# GPS (gpsd Integration)
+# -----------------------------------------------------------------------------
+gps:
+  enabled: true              # Attempt to connect to gpsd daemon
+  gpsd_host: localhost
+  gpsd_port: 2947
+  fallback_to_config: true   # Use location block above when GPS unavailable
+
+# -----------------------------------------------------------------------------
+# eBird Integration
+# Get your free API token at: https://ebird.org/api/keygen
+# -----------------------------------------------------------------------------
+ebird:
+  api_token: ""
+  # Region code for rarity data. Use county-level for best accuracy.
+  # Format: CC-ST-FFF  (e.g. US-TX-453 = Travis County, Texas)
+  # Find your county code at: https://ebird.org/region/world/regions
+  region_code: US-TX-453
+  default_protocol: Stationary   # eBird checklist protocol for CSV export
+  num_observers: 1
+  complete_checklist: false      # Set true only if you recorded ALL species seen
+  export_directory: ./exports
+
+# -----------------------------------------------------------------------------
+# Database
+# -----------------------------------------------------------------------------
+database:
+  path: ./pi_birdie.db
+  retention_days: 60             # Auto-delete records older than this many days
+
+# -----------------------------------------------------------------------------
+# Rarity Classification
+# No per-detection scraping. Uses two lightweight cached eBird API calls:
+#   1. species list (monthly)  — all species ever recorded in region
+#   2. notable feed (daily)    — species flagged as unusual by eBird reviewers
+# -----------------------------------------------------------------------------
+rarity:
+  enabled: true
+  cache_dir: ./data
+  notable_refresh_hours: 24      # Re-check eBird notable sightings every 24h (when online)
+  spplist_refresh_days: 30       # Re-download regional species list monthly (when online)
+
+# -----------------------------------------------------------------------------
+# Direction of Arrival (DoA) — Acoustic Sound Localization
+# Requires multi-channel microphone array (e.g. ReSpeaker 4-Mic HAT)
+# Automatically disabled at runtime if audio.channels < 2
+# -----------------------------------------------------------------------------
+doa:
+  enabled: true
+  # Mic array geometry preset:
+  #   "respeaker_4mic"  - Seeed ReSpeaker 4-Mic Array (circular, 70mm diameter)
+  #   "linear_2mic"     - Generic 2-mic linear array (specify spacing below)
+  #   "custom"          - Use custom_mic_positions_m below
+  mic_array_type: respeaker_4mic
+  mic_radius_m: 0.035            # For respeaker_4mic: 35mm radius (70mm diameter)
+  mic_spacing_m: 0.05            # For linear_2mic: spacing between mics in meters
+  # For "custom": list of [x, y] positions in meters, one per channel
+  # custom_mic_positions_m:
+  #   - [0.035, 0.0]
+  #   - [0.0, 0.035]
+  #   - [-0.035, 0.0]
+  #   - [0.0, -0.035]
+  speed_of_sound: 343.0          # m/s at ~20°C; adjust for local conditions
+  bandpass_low_hz: 1000          # Bird call bandpass pre-filter (lower cutoff)
+  bandpass_high_hz: 6000         # Bird call bandpass pre-filter (upper cutoff)
+  confidence_threshold: 0.3      # Below this → show "No signal" instead of noisy angle
+  interp_factor: 16              # Sub-sample interpolation factor for TDOA accuracy
+
+# -----------------------------------------------------------------------------
+# User Interface
+# -----------------------------------------------------------------------------
+ui:
+  # Display target: "hdmi" or "touchscreen"
+  # This controls layout density, font size, and touch target sizes.
+  display_mode: hdmi
+
+  theme: dark                    # "dark" | "light"
+  fullscreen: false              # Overridden to true automatically in backyard mode
+
+  # HDMI display settings (e.g. standard 1024×600 or 1920×1080 monitor)
+  hdmi_width: 1024
+  hdmi_height: 600
+  hdmi_font_scale: 1.0
+
+  # Touchscreen settings (e.g. 800×480 SPI display)
+  touchscreen_width: 800
+  touchscreen_height: 480
+  touchscreen_font_scale: 0.85
+  touch_target_min_px: 44        # Minimum tap target height for finger input (WCAG guideline)
+
+  spectrogram_update_ms: 100     # Spectrogram refresh interval
+  detection_list_limit: 50       # Max recent detections to display in the list

@@ -1,0 +1,39 @@
+# =============================================================================
+# pi_birdie — Python Dependencies
+# Install inside a virtual environment: pip install -r requirements.txt
+#
+# NOTE: TFLite runtime is NOT listed here — it requires platform-specific
+# installation. The install.sh script handles this automatically with fallback:
+#   1. ai-edge-litert   (preferred — Pi 5 / Python 3.11+)
+#   2. tflite-runtime   (fallback)
+#
+# System packages required (via apt — handled by install.sh):
+#   sudo apt install ffmpeg libsndfile1 libasound2-dev \
+#                    gpsd gpsd-clients python3-gps
+# =============================================================================
+
+# Core ML — Bird Audio Classification
+birdnetlib>=0.7.0
+numpy<2.0                   # Pinned: numpy>=2.0 breaks tflite-runtime interpreter
+
+# Audio Capture (sounddevice preferred over pyaudio — better ALSA/numpy integration)
+sounddevice>=0.4.6
+scipy>=1.10.0               # Bandpass filter design (signal.butter, signal.sosfilt)
+
+# UI Framework
+customtkinter>=5.2.0
+matplotlib>=3.7.0           # Spectrogram rendering (FigureCanvasTkAgg)
+Pillow>=10.0.0              # Bird image loading and display
+
+# Configuration
+PyYAML>=6.0.1
+
+# GPS Integration
+gps>=3.19                   # gpsd Python client library
+
+# Networking / eBird API / Rarity
+requests>=2.28.0
+ebird-api>=3.0.0            # Read-only eBird API wrapper (notable feed, species list, taxonomy)
+
+# Image Download Script (scripts/download_bird_images.py only)
+tqdm>=4.65.0                # Progress bar for bulk image downloads
