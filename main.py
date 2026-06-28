@@ -50,6 +50,8 @@ from rarity_service  import RarityService
 from audio_processor import AudioProcessor
 from sync_service    import SyncService
 from ui              import PiBirdieApp
+from web_server      import WebDashboardService
+
 
 
 # ── Argument Parsing ──────────────────────────────────────────────────────────
@@ -150,6 +152,7 @@ class PiBirdieMain:
         self._rarity_service = None
         self._audio_proc     = None
         self._sync_service   = None
+        self._web_service    = None
         self._app            = None
 
         # Shutdown coordination
@@ -237,6 +240,15 @@ class PiBirdieMain:
             config=cfg,
             database=self._database,
             rarity_service=self._rarity_service,
+        )
+
+        # 8. Web Dashboard Service
+        self._web_service = WebDashboardService(
+            config=cfg,
+            database=self._database,
+            audio_proc=self._audio_proc,
+            gps_svc=self._gps_service,
+            sync_svc=self._sync_service,
         )
 
         # 8. UI
@@ -332,6 +344,7 @@ class PiBirdieMain:
         self._app.setup()
 
         self._sync_service.start()
+        self._web_service.start()
         logger.info("All services started.")
 
     def _enter_main_loop(self) -> None:
@@ -343,6 +356,7 @@ class PiBirdieMain:
         """Stop all services in reverse order of start. Always runs in finally."""
         logger.info("Shutting down pi_birdie…")
         for name, svc in [
+            ("web_service",     self._web_service),
             ("sync_service",    self._sync_service),
             ("audio_processor", self._audio_proc),
             ("gps_service",     self._gps_service),

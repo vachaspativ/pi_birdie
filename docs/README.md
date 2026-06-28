@@ -319,6 +319,38 @@ Find yours at [ebird.org/region/world/regions](https://ebird.org/region/world/re
 
 ---
 
+## Local HTTP Web Dashboard
+
+pi_birdie features a local concurrent web server that serves a dynamic dashboard. This is especially useful for headless monitoring when running in kiosk mode.
+
+### Accessing the Dashboard
+
+Open your web browser on a device on the same local network and navigate to:
+```
+http://<pi-ip-address>:8080
+```
+*(Default port is `8080` unless configured otherwise).*
+
+### Configuration (`config.yaml`)
+
+```yaml
+web_server:
+  enabled: true
+  host: 0.0.0.0      # Bind to all interfaces (accessible from other devices)
+  port: 8080         # Port to run on
+```
+
+### JSON API Endpoints
+
+The web server exposes the following REST APIs:
+- `GET /api/status` — Diagnostics including GPS status/coordinates, DoA mic capability, and sync connectivity.
+- `GET /api/detections` — List of recent logged bird detections with metadata.
+- `GET /api/spectrogram` — Current raw spectrogram buffer values.
+- `GET /audio/<filename>` — Stream saved detection WAV clips.
+- `GET /images/<filename>` — Stream cached bird species images.
+
+---
+
 ## Architecture Overview
 
 ```
@@ -331,6 +363,7 @@ config.yaml
     │   ├── rarity_service.py  → eBird notable + spplist (O(1) set lookups)
     │   ├── audio_processor.py → sounddevice + BirdNET RecordingBuffer
     │   ├── sync_service.py    → connectivity monitor + eBird CSV export
+    │   ├── web_server.py      → HTTP dashboard server (concurrent API / files)
     │   └── ui.py              → CustomTkinter adaptive UI
     │
     ├── scripts/

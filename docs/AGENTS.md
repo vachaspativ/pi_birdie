@@ -17,6 +17,7 @@ working on this codebase. Read this file before making any modifications.
 | `rarity_service.py` | eBird notable + spplist caching, O(1) rarity lookup | requests |
 | `audio_processor.py` | sounddevice capture, BirdNET analysis, DoA feeding | birdnetlib, sounddevice, numpy, doa_locator |
 | `sync_service.py` | Connectivity monitoring, eBird CSV export | requests, database |
+| `web_server.py` | Threaded local HTTP Web Dashboard & REST APIs | stdlib only |
 | `ui.py` | CustomTkinter adaptive UI, spectrogram, compass | customtkinter, matplotlib, PIL, gps_service |
 
 ---
@@ -39,6 +40,9 @@ Main Thread (Tk mainloop)
 │
 ├── sync-service thread (daemon)
 │   └── Connectivity check → online_callback → ui._schedule()
+│
+├── web-dashboard thread (daemon)
+│   └── serve_forever() HTTP server (ThreadingHTTPServer concurrently spawns request threads)
 │
 └── rarity-refresh thread (daemon)
     └── eBird API refresh (hourly wake) → sets in-memory cache sets
@@ -153,6 +157,9 @@ sounddevice.InputStream callback
    `audio_proc.is_doa_capable()` is called in `_start_services()` and passed
    to `ui.set_doa_capable()` before `ui.setup()`. The layout is then built
    once. Do not attempt to toggle the layout at runtime.
+
+9. **The web server must use concurrent connection handling.**
+   Use ThreadingHTTPServer (rather than simple HTTPServer) to prevent audio file streaming or slow network requests from freezing the entire dashboard API polling loop.
 
 ---
 
